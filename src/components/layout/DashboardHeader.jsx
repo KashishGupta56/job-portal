@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Bell, User, Moon, Sun, ChevronDown, Menu, X } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, Bell, User, Moon, Sun, ChevronDown, Menu, X, LogOut } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { supabase } from '../../supabase';
+import { useNavigate } from 'react-router-dom';
 
 const DashboardHeader = () => {
   const { theme, setTheme, notifications, markNotifyRead, sidebarOpen, setSidebarOpen } = useApp();
   const [showNotify, setShowNotify] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const [userName, setUserName] = useState('User');
+  const navigate = useNavigate();
+  const userMenuRef = useRef(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -26,6 +30,22 @@ const DashboardHeader = () => {
     }
     fetchUser()
   }, [])
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setShowUserMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/login');
+  };
 
   return (
     <header className="dashboard-header">
@@ -106,19 +126,50 @@ const DashboardHeader = () => {
           )}
         </div>
 
-        <div style={{ 
-          display: 'flex', alignItems: 'center', gap: '0.8rem', 
-          cursor: 'pointer', padding: '0.4rem 1rem', borderRadius: '12px' 
-        }} className="glass">
-          <div style={{ 
-            width: '32px', height: '32px', borderRadius: '50%', 
-            background: 'var(--primary)', display: 'flex', 
-            alignItems: 'center', justifyContent: 'center' 
-          }}>
-            <User size={18} />
+        {/* User Menu */}
+        <div ref={userMenuRef} style={{ position: 'relative' }}>
+          <div 
+            style={{ 
+              display: 'flex', alignItems: 'center', gap: '0.8rem', 
+              cursor: 'pointer', padding: '0.4rem 1rem', borderRadius: '12px' 
+            }} 
+            className="glass"
+            onClick={() => setShowUserMenu(!showUserMenu)}
+          >
+            <div style={{ 
+              width: '32px', height: '32px', borderRadius: '50%', 
+              background: 'var(--primary)', display: 'flex', 
+              alignItems: 'center', justifyContent: 'center' 
+            }}>
+              <User size={18} />
+            </div>
+            <span style={{ fontWeight: '500', fontSize: '0.9rem' }}>{userName}</span>
+            <ChevronDown size={16} />
           </div>
-          <span style={{ fontWeight: '500', fontSize: '0.9rem' }}>{userName}</span>
-          <ChevronDown size={16} />
+
+          {showUserMenu && (
+            <div className="glass" style={{
+              position: 'absolute', top: '110%', right: 0,
+              width: '180px', padding: '0.5rem',
+              zIndex: 1002, borderRadius: '12px'
+            }}>
+              <button
+                onClick={handleLogout}
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center',
+                  gap: '0.8rem', padding: '0.75rem 1rem',
+                  background: 'transparent', border: 'none',
+                  color: '#ef4444', cursor: 'pointer',
+                  borderRadius: '8px', fontSize: '0.9rem', fontWeight: '500'
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.1)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <LogOut size={16} />
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
