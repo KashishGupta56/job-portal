@@ -15,10 +15,8 @@ const Overview = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Session lo
       const { data: { session } } = await supabase.auth.getSession()
       if (session?.user) {
-        // Profile se naam lo
         const { data: profile } = await supabase
           .from('profiles')
           .select('full_name')
@@ -31,7 +29,6 @@ const Overview = () => {
         })
       }
 
-      // Jobs load karo
       const { data: jobsData } = await supabase
         .from('jobs')
         .select('*')
@@ -52,14 +49,14 @@ const Overview = () => {
 
   return (
     <div className="overview-page">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', position: 'relative', zIndex: 1 }}>
         <div>
           <h1 style={{ fontSize: '2.2rem', marginBottom: '0.5rem' }}>
             Good Afternoon, {user?.full_name || user?.email?.split('@')[0] || 'User'}!
           </h1>
           <p style={{ color: 'var(--text-muted)' }}>Here's what's happening with your placements today.</p>
         </div>
-        <button className="btn btn-primary">
+        <button className="btn btn-primary" style={{ position: 'relative', zIndex: 1 }}>
           <TrendingUp size={18} /> Resume Journey
         </button>
       </div>
