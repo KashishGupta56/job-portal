@@ -52,7 +52,7 @@ const DashboardHeader = () => {
   const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
-    <header className="dashboard-header">
+    <header className="dashboard-header" style={{ overflow: 'visible' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <button
           className="btn btn-outline"
@@ -120,7 +120,7 @@ const DashboardHeader = () => {
           {showNotify && (
             <div className="glass" style={{
               position: 'absolute', top: 'calc(100% + 10px)', right: 0,
-              width: '340px', zIndex: 1002,
+              width: '340px', zIndex: 9999,
               borderRadius: '16px', overflow: 'hidden',
               border: '1px solid var(--surface-border)'
             }}>
@@ -199,11 +199,10 @@ const DashboardHeader = () => {
           {showUserMenu && (
             <div className="glass" style={{
               position: 'absolute', top: 'calc(100% + 10px)', right: 0,
-              width: '220px', zIndex: 1002,
+              width: '220px', zIndex: 9999,
               borderRadius: '16px', overflow: 'hidden',
               border: '1px solid var(--surface-border)'
             }}>
-              {/* User Info */}
               <div style={{
                 padding: '1rem 1.25rem',
                 borderBottom: '1px solid var(--surface-border)',
@@ -213,7 +212,6 @@ const DashboardHeader = () => {
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', margin: '2px 0 0' }}>{userEmail}</p>
               </div>
 
-              {/* Menu Items */}
               <div style={{ padding: '0.5rem' }}>
                 <button
                   onClick={() => { navigate('/dashboard/profile'); setShowUserMenu(false); }}
