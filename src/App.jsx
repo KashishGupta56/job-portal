@@ -7,6 +7,7 @@ import { supabase } from './supabase';
 // Pages
 import Home from './pages/Home';
 import Overview from './pages/dashboard/Overview';
+import Settings from './pages/dashboard/Settings';
 import JobPortal from './pages/JobPortal';
 import Preparation from './pages/Preparation';
 import DSASection from './pages/DSASection';
@@ -80,6 +81,7 @@ function App() {
                   <Route path="/dsa" element={<DSASection />} />
                   <Route path="/companies" element={<CompanyProcess />} />
                   <Route path="/profile" element={<ResumeBuilder />} />
+                  <Route path="/settings" element={<Settings />} />
                   <Route path="/prep/aptitude" element={<Aptitude />} />
                   <Route path="/prep/technical" element={<Technical />} />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
