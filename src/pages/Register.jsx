@@ -15,17 +15,27 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault()
     setLoading(true)
-    const { data, error } = await supabase.auth.signUp({ email, password })
+
+    const { data, error } = await supabase.auth.signUp({ 
+      email, 
+      password,
+      options: {
+        data: { full_name: fullName }
+      }
+    })
+
     if (error) {
       setError(error.message)
       setLoading(false)
       return
     }
+
     await supabase.from('profiles').insert({
       id: data.user.id,
       full_name: fullName,
       role: role
     })
+
     navigate('/login')
     setLoading(false)
   }

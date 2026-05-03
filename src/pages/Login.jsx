@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../supabase'
 import { useNavigate, Link } from 'react-router-dom'
 import { Mail, Lock, LogIn } from 'lucide-react'
+import emailjs from '@emailjs/browser'
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -16,9 +17,24 @@ const Login = () => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
       setError(error.message)
-    } else {
-      navigate('/dashboard')
+      setLoading(false)
+      return
     }
+
+    // Login notification email bhejo
+    await emailjs.send(
+      'service_dvvdb5g',
+      'xdgnpnj',
+      {
+        to_name: email,
+        user_email: email,
+        login_time: new Date().toLocaleString('en-IN'),
+        email: email
+      },
+      'aR3uDyrLCt64g8Al9'
+    )
+
+    navigate('/dashboard')
     setLoading(false)
   }
 
@@ -31,7 +47,6 @@ const Login = () => {
       background: 'var(--background)',
       padding: '2rem'
     }}>
-      {/* Background blobs */}
       <div className="blob blob-1"></div>
       <div className="blob blob-2"></div>
 
@@ -43,7 +58,6 @@ const Login = () => {
         position: 'relative',
         zIndex: 1
       }}>
-        {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
           <h1 style={{
             fontSize: '2rem',
@@ -54,7 +68,6 @@ const Login = () => {
             marginBottom: '0.5rem'
           }}>JobStream</h1>
           <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Welcome Back!</h2>
-          
         </div>
 
         {error && (
@@ -72,7 +85,6 @@ const Login = () => {
         )}
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-          {/* Email */}
           <div style={{ position: 'relative' }}>
             <Mail size={18} style={{
               position: 'absolute', left: '1rem', top: '50%',
@@ -97,7 +109,6 @@ const Login = () => {
             />
           </div>
 
-          {/* Password */}
           <div style={{ position: 'relative' }}>
             <Lock size={18} style={{
               position: 'absolute', left: '1rem', top: '50%',
@@ -122,7 +133,6 @@ const Login = () => {
             />
           </div>
 
-          {/* Login Button */}
           <button
             type="submit"
             className="btn btn-primary"
@@ -140,7 +150,6 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Register Link */}
         <p style={{
           textAlign: 'center',
           marginTop: '1.5rem',
@@ -148,13 +157,13 @@ const Login = () => {
           fontSize: '0.95rem'
         }}>
           Don't have an account?{' '}
-<Link to="/register" style={{
-  color: 'var(--primary)',
-  fontWeight: '600',
-  textDecoration: 'none'
-}}>
-  Sign Up
-</Link>
+          <Link to="/register" style={{
+            color: 'var(--primary)',
+            fontWeight: '600',
+            textDecoration: 'none'
+          }}>
+            Sign Up
+          </Link>
         </p>
       </div>
     </div>
