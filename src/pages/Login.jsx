@@ -21,18 +21,21 @@ const Login = () => {
       return
     }
 
-    // Login notification email bhejo
-    await emailjs.send(
-      'service_dvvdb5g',
-      'xdgnpnj',
-      {
-        to_name: email,
-        user_email: email,
-        login_time: new Date().toLocaleString('en-IN'),
-        email: email
-      },
-      'aR3uDyrLCt64g8Al9'
-    )
+    try {
+      await emailjs.send(
+        'service_dvvdb5g',
+        'xdgnpnj',
+        {
+          to_name: email,
+          user_email: email,
+          login_time: new Date().toLocaleString('en-IN'),
+          email: email
+        },
+        'aR3uDyrLCt64g8Al9'
+      )
+    } catch (emailError) {
+      console.log('Email send failed:', emailError)
+    }
 
     navigate('/dashboard')
     setLoading(false)
