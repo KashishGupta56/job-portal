@@ -15,6 +15,7 @@ import CompanyProcess from './pages/CompanyProcess';
 import ResumeBuilder from './pages/ResumeBuilder';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ResetPassword from './pages/ResetPassword';
 
 // Prep Subpages
 import Aptitude from './pages/prep/Aptitude';
@@ -69,6 +70,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* Protected Dashboard Routes */}
           <Route path="/*" element={

@@ -9,6 +9,10 @@ const Login = () => {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showForgot, setShowForgot] = useState(false)
+  const [forgotEmail, setForgotEmail] = useState('')
+  const [forgotMessage, setForgotMessage] = useState('')
+  const [forgotLoading, setForgotLoading] = useState(false)
   const navigate = useNavigate()
 
   const handleLogin = async (e) => {
@@ -41,6 +45,20 @@ const Login = () => {
     setLoading(false)
   }
 
+  const handleForgotPassword = async (e) => {
+    e.preventDefault()
+    setForgotLoading(true)
+    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
+      redirectTo: 'https://job-portal-opal-iota.vercel.app/reset-password'
+    })
+    if (error) {
+      setForgotMessage('Error: ' + error.message)
+    } else {
+      setForgotMessage('Password reset email sent! Please check your inbox.')
+    }
+    setForgotLoading(false)
+  }
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -70,7 +88,9 @@ const Login = () => {
             WebkitTextFillColor: 'transparent',
             marginBottom: '0.5rem'
           }}>JobStream</h1>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Welcome Back!</h2>
+          <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>
+            {showForgot ? 'Reset Password' : 'Welcome Back!'}
+          </h2>
         </div>
 
         {error && (
@@ -87,87 +107,176 @@ const Login = () => {
           </div>
         )}
 
-        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-          <div style={{ position: 'relative' }}>
-            <Mail size={18} style={{
-              position: 'absolute', left: '1rem', top: '50%',
-              transform: 'translateY(-50%)', color: 'var(--text-muted)'
-            }} />
-            <input
-              type="email"
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '0.9rem 1rem 0.9rem 3rem',
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid var(--glass-border)',
+        {!showForgot ? (
+          <>
+            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+              <div style={{ position: 'relative' }}>
+                <Mail size={18} style={{
+                  position: 'absolute', left: '1rem', top: '50%',
+                  transform: 'translateY(-50%)', color: 'var(--text-muted)'
+                }} />
+                <input
+                  type="email"
+                  placeholder="Email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '0.9rem 1rem 0.9rem 3rem',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid var(--glass-border)',
+                    borderRadius: '12px',
+                    color: 'var(--text-main)',
+                    fontSize: '1rem',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+
+              <div style={{ position: 'relative' }}>
+                <Lock size={18} style={{
+                  position: 'absolute', left: '1rem', top: '50%',
+                  transform: 'translateY(-50%)', color: 'var(--text-muted)'
+                }} />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '0.9rem 1rem 0.9rem 3rem',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid var(--glass-border)',
+                    borderRadius: '12px',
+                    color: 'var(--text-main)',
+                    fontSize: '1rem',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+
+              <p
+                onClick={() => setShowForgot(true)}
+                style={{
+                  textAlign: 'right',
+                  color: 'var(--primary)',
+                  fontSize: '0.9rem',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                  marginTop: '-0.5rem'
+                }}
+              >
+                Forgot Password?
+              </p>
+
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={loading}
+                style={{
+                  width: '100%',
+                  justifyContent: 'center',
+                  padding: '1rem',
+                  fontSize: '1rem',
+                  marginTop: '0.5rem'
+                }}
+              >
+                <LogIn size={18} />
+                {loading ? 'Logging in...' : 'Login'}
+              </button>
+            </form>
+
+            <p style={{
+              textAlign: 'center',
+              marginTop: '1.5rem',
+              color: 'var(--text-muted)',
+              fontSize: '0.95rem'
+            }}>
+              Don't have an account?{' '}
+              <Link to="/register" style={{
+                color: 'var(--primary)',
+                fontWeight: '600',
+                textDecoration: 'none'
+              }}>
+                Sign Up
+              </Link>
+            </p>
+          </>
+        ) : (
+          <>
+            {forgotMessage ? (
+              <div style={{
+                background: 'rgba(99, 102, 241, 0.1)',
+                border: '1px solid rgba(99, 102, 241, 0.3)',
                 borderRadius: '12px',
-                color: 'var(--text-main)',
-                fontSize: '1rem',
-                outline: 'none'
-              }}
-            />
-          </div>
+                padding: '1rem',
+                marginBottom: '1.5rem',
+                color: 'var(--primary)',
+                fontSize: '0.9rem',
+                textAlign: 'center'
+              }}>
+                {forgotMessage}
+              </div>
+            ) : null}
 
-          <div style={{ position: 'relative' }}>
-            <Lock size={18} style={{
-              position: 'absolute', left: '1rem', top: '50%',
-              transform: 'translateY(-50%)', color: 'var(--text-muted)'
-            }} />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
+            <form onSubmit={handleForgotPassword} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+              <div style={{ position: 'relative' }}>
+                <Mail size={18} style={{
+                  position: 'absolute', left: '1rem', top: '50%',
+                  transform: 'translateY(-50%)', color: 'var(--text-muted)'
+                }} />
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '0.9rem 1rem 0.9rem 3rem',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid var(--glass-border)',
+                    borderRadius: '12px',
+                    color: 'var(--text-main)',
+                    fontSize: '1rem',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={forgotLoading}
+                style={{
+                  width: '100%',
+                  justifyContent: 'center',
+                  padding: '1rem',
+                  fontSize: '1rem'
+                }}
+              >
+                {forgotLoading ? 'Sending...' : 'Send Reset Email'}
+              </button>
+            </form>
+
+            <p
+              onClick={() => { setShowForgot(false); setForgotMessage('') }}
               style={{
-                width: '100%',
-                padding: '0.9rem 1rem 0.9rem 3rem',
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid var(--glass-border)',
-                borderRadius: '12px',
-                color: 'var(--text-main)',
-                fontSize: '1rem',
-                outline: 'none'
+                textAlign: 'center',
+                marginTop: '1.5rem',
+                color: 'var(--primary)',
+                fontSize: '0.95rem',
+                cursor: 'pointer',
+                fontWeight: '600'
               }}
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={loading}
-            style={{
-              width: '100%',
-              justifyContent: 'center',
-              padding: '1rem',
-              fontSize: '1rem',
-              marginTop: '0.5rem'
-            }}
-          >
-            <LogIn size={18} />
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
-
-        <p style={{
-          textAlign: 'center',
-          marginTop: '1.5rem',
-          color: 'var(--text-muted)',
-          fontSize: '0.95rem'
-        }}>
-          Don't have an account?{' '}
-          <Link to="/register" style={{
-            color: 'var(--primary)',
-            fontWeight: '600',
-            textDecoration: 'none'
-          }}>
-            Sign Up
-          </Link>
-        </p>
+            >
+              ← Back to Login
+            </p>
+          </>
+        )}
       </div>
     </div>
   )
