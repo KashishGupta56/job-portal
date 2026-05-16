@@ -44,23 +44,71 @@ const Overview = () => {
     { title: 'Leaderboard', value: '#12', icon: <Award />, color: '#10b981' },
   ];
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  };
+
   return (
-    <div className="overview-page">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', position: 'relative', zIndex: 1 }}>
+    <div className="overview-page" style={{ isolation: 'isolate' }}>
+
+      {/* Header row */}
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: '3rem',
+        isolation: 'isolate',
+        zIndex: 0,
+        position: 'relative'
+      }}>
         <div>
           <h1 style={{ fontSize: '2.2rem', marginBottom: '0.5rem' }}>
-            Good Afternoon, {user?.full_name || user?.email?.split('@')[0] || 'User'}!
+            {getGreeting()}, {user?.full_name || user?.email?.split('@')[0] || 'User'}!
           </h1>
-          <p style={{ color: 'var(--text-muted)' }}>Here's what's happening with your placements today.</p>
+          <p style={{ color: 'var(--text-muted)' }}>
+            Here's what's happening with your placements today.
+          </p>
         </div>
-        <button className="btn btn-primary" style={{ position: 'relative', zIndex: 1 }}>
+
+        {/* ✅ FIX: zIndex 0 + isolation */}
+        <button 
+          className="btn btn-primary"
+          style={{ 
+            position: 'relative',
+            zIndex: 0,
+            isolation: 'isolate'
+          }}
+        >
           <TrendingUp size={18} /> Resume Journey
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', marginBottom: '3rem' }}>
+      {/* Stats Grid */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(4, 1fr)', 
+        gap: '1.5rem', 
+        marginBottom: '3rem',
+        position: 'relative',
+        zIndex: 0,
+        isolation: 'isolate'
+      }}>
         {stats.map((stat, idx) => (
-          <div key={idx} className="glass" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
+          <div 
+            key={idx} 
+            className="glass" 
+            style={{ 
+              padding: '1.5rem', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '1.2rem',
+              isolation: 'isolate',
+              zIndex: 0
+            }}
+          >
             <div style={{ 
               width: '50px', height: '50px', borderRadius: '12px', 
               background: `${stat.color}15`, color: stat.color,
@@ -69,16 +117,37 @@ const Overview = () => {
               {stat.icon}
             </div>
             <div>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>{stat.title}</p>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>
+                {stat.title}
+              </p>
               <h2 style={{ fontSize: '1.8rem', margin: 0 }}>{stat.value}</h2>
             </div>
           </div>
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
-        <div className="recent-apps glass" style={{ padding: '2rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      {/* Bottom Grid */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: '2fr 1fr', 
+        gap: '2rem',
+        position: 'relative',
+        zIndex: 0,
+        isolation: 'isolate'
+      }}>
+        {/* Recommended Jobs */}
+        <div 
+          className="recent-apps glass" 
+          style={{ 
+            padding: '2rem',
+            isolation: 'isolate',
+            zIndex: 0
+          }}
+        >
+          <div style={{ 
+            display: 'flex', justifyContent: 'space-between', 
+            alignItems: 'center', marginBottom: '2rem' 
+          }}>
             <h3 style={{ fontSize: '1.4rem' }}>Recommended Jobs</h3>
             <span 
               onClick={() => navigate('/jobs')}
@@ -87,11 +156,18 @@ const Overview = () => {
               View All
             </span>
           </div>
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {jobs.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem' }}>
-                Abhi koi job nahi hai
-              </p>
+              <div style={{ textAlign: 'center', padding: '2rem' }}>
+                <p style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>🔍</p>
+                <p style={{ color: 'var(--text-muted)', fontSize: '1rem', fontWeight: '500' }}>
+                  No recommendations yet
+                </p>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                  New opportunities are added daily — check back soon!
+                </p>
+              </div>
             ) : (
               jobs.map((job, idx) => (
                 <div key={idx} style={{ 
@@ -126,7 +202,15 @@ const Overview = () => {
           </div>
         </div>
 
-        <div className="prep-progress glass" style={{ padding: '2rem' }}>
+        {/* Daily Streak */}
+        <div 
+          className="prep-progress glass" 
+          style={{ 
+            padding: '2rem',
+            isolation: 'isolate',
+            zIndex: 0
+          }}
+        >
           <h3 style={{ fontSize: '1.4rem', marginBottom: '2rem' }}>
             Daily Streak <Zap size={20} style={{ color: '#fbbf24', marginLeft: '0.5rem' }} />
           </h3>

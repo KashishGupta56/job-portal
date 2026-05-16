@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-  const [userRole, setUserRole] = useState('student'); // 'student' | 'recruiter' | 'admin'
+  const [userRole, setUserRole] = useState('student');
   const [savedJobs, setSavedJobs] = useState([]);
   const [appliedJobs, setAppliedJobs] = useState([]);
   const [dsaProgress, setDsaProgress] = useState(
@@ -13,12 +13,24 @@ export const AppProvider = ({ children }) => {
     { id: 1, title: 'Job Alert', message: 'New Frontend Role at Netflix', time: '2h ago', read: false },
     { id: 2, title: 'Prep Tip', message: 'Check out the new DP sheet', time: '5h ago', read: true }
   ]);
-  const [theme, setTheme] = useState('dark');
+  const [theme, setThemeState] = useState(
+    localStorage.getItem('theme') || 'dark'
+  );
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
     localStorage.setItem('dsa_progress', JSON.stringify(dsaProgress));
   }, [dsaProgress]);
+
+  // Theme apply karo jab bhi change ho
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const setTheme = (newTheme) => {
+    setThemeState(newTheme);
+  };
 
   const toggleSaveJob = (jobId) => {
     setSavedJobs(prev => 

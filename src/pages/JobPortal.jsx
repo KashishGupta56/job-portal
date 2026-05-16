@@ -109,7 +109,7 @@ const JobPortal = () => {
       {/* ── TOAST ── */}
       {toast && (
         <div style={{
-          position: 'fixed', top: '24px', right: '24px', zIndex: 9999,
+          position: 'fixed', top: '24px', right: '24px', zIndex: 50000,
           padding: '1rem 1.5rem',
           borderRadius: '12px',
           background: toastColors[toast.type].bg,
@@ -131,7 +131,7 @@ const JobPortal = () => {
       {showLoginPrompt && (
         <div
           style={{
-            position: 'fixed', inset: 0, zIndex: 9998,
+            position: 'fixed', inset: 0, zIndex: 50000,
             background: 'rgba(0,0,0,0.65)',
             backdropFilter: 'blur(8px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',

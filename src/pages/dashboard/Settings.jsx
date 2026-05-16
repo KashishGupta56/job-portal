@@ -1,10 +1,70 @@
-import React, { useState } from 'react';
-import { User, Bell, Lock, Palette, Globe, Shield, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { User, Bell, Lock, Palette, Shield, ChevronRight } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { supabase } from '../../supabase';
 
 const Settings = () => {
   const { theme, setTheme } = useApp();
   const [activeSection, setActiveSection] = useState('profile');
+  const [privacy, setPrivacy] = useState({
+    public_profile: true,
+    show_online: true,
+    data_analytics: true
+  });
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [securityMsg, setSecurityMsg] = useState('');
+  const [savingPassword, setSavingPassword] = useState(false);
+
+  const handleUpdatePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      setSecurityMsg('Passwords do not match!');
+      return;
+    }
+    if (newPassword.length < 6) {
+      setSecurityMsg('Password must be at least 6 characters!');
+      return;
+    }
+    setSavingPassword(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) {
+      setSecurityMsg('Error: ' + error.message);
+    } else {
+      setSecurityMsg('Password updated successfully! ✅');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    }
+    setSavingPassword(false);
+  };
+
+  useEffect(() => {
+    const fetchPrivacy = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('public_profile, show_online, data_analytics')
+          .eq('id', session.user.id)
+          .single();
+        if (data) setPrivacy(data);
+      }
+    };
+    fetchPrivacy();
+  }, []);
+
+  const handleToggle = async (key) => {
+    const newValue = !privacy[key];
+    setPrivacy(prev => ({ ...prev, [key]: newValue }));
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      await supabase
+        .from('profiles')
+        .update({ [key]: newValue })
+        .eq('id', session.user.id);
+    }
+  };
 
   const sections = [
     { id: 'profile', icon: <User size={18} />, label: 'Profile Settings' },
@@ -14,13 +74,33 @@ const Settings = () => {
     { id: 'privacy', icon: <Shield size={18} />, label: 'Privacy' },
   ];
 
+  const Toggle = ({ value, onChange }) => (
+    <div
+      onClick={onChange}
+      style={{
+        width: '44px', height: '24px',
+        background: value ? 'var(--primary)' : 'var(--surface-border)',
+        borderRadius: '24px', cursor: 'pointer',
+        position: 'relative', transition: 'background 0.2s'
+      }}
+    >
+      <div style={{
+        position: 'absolute', top: '3px',
+        left: value ? '23px' : '3px',
+        width: '18px', height: '18px',
+        background: '#fff', borderRadius: '50%',
+        transition: 'left 0.2s'
+      }} />
+    </div>
+  );
+
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto' }}>
       <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Settings</h1>
       <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Manage your account preferences</p>
 
       <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', gap: '2rem' }}>
-        
+
         {/* Left Menu */}
         <div className="glass" style={{ padding: '1rem', borderRadius: '16px', height: 'fit-content' }}>
           {sections.map(section => (
@@ -50,7 +130,7 @@ const Settings = () => {
 
         {/* Right Content */}
         <div className="glass" style={{ padding: '2rem', borderRadius: '16px' }}>
-          
+
           {activeSection === 'profile' && (
             <div>
               <h3 style={{ marginBottom: '1.5rem' }}>Profile Settings</h3>
@@ -86,10 +166,7 @@ const Settings = () => {
                     <p style={{ fontWeight: '500', margin: 0 }}>{item.label}</p>
                     <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>{item.desc}</p>
                   </div>
-                  <label style={{ position: 'relative', display: 'inline-block', width: '44px', height: '24px', cursor: 'pointer' }}>
-                    <input type="checkbox" defaultChecked style={{ opacity: 0, width: 0, height: 0 }} />
-                    <span style={{ position: 'absolute', inset: 0, background: 'var(--primary)', borderRadius: '24px', transition: '0.2s' }} />
-                  </label>
+                  <Toggle value={true} onChange={() => {}} />
                 </div>
               ))}
             </div>
@@ -101,17 +178,52 @@ const Settings = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
                 <div>
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem' }}>Current Password</label>
-                  <input type="password" placeholder="••••••••" className="search-input" style={{ width: '100%', padding: '0.8rem 1rem' }} />
+                  <input
+                    type="password" placeholder="••••••••"
+                    value={currentPassword}
+                    onChange={e => setCurrentPassword(e.target.value)}
+                    className="search-input" style={{ width: '100%', padding: '0.8rem 1rem' }}
+                  />
                 </div>
                 <div>
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem' }}>New Password</label>
-                  <input type="password" placeholder="••••••••" className="search-input" style={{ width: '100%', padding: '0.8rem 1rem' }} />
+                  <input
+                    type="password" placeholder="••••••••"
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    className="search-input" style={{ width: '100%', padding: '0.8rem 1rem' }}
+                  />
                 </div>
                 <div>
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem' }}>Confirm Password</label>
-                  <input type="password" placeholder="••••••••" className="search-input" style={{ width: '100%', padding: '0.8rem 1rem' }} />
+                  <input
+                    type="password" placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    className="search-input" style={{ width: '100%', padding: '0.8rem 1rem' }}
+                  />
                 </div>
-                <button className="btn btn-primary" style={{ width: 'fit-content' }}>Update Password</button>
+
+                {securityMsg && (
+                  <div style={{
+                    padding: '0.8rem 1rem', borderRadius: '10px',
+                    background: securityMsg.includes('successfully') ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
+                    border: `1px solid ${securityMsg.includes('successfully') ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`,
+                    color: securityMsg.includes('successfully') ? '#10b981' : '#ef4444',
+                    fontSize: '0.88rem'
+                  }}>
+                    {securityMsg}
+                  </div>
+                )}
+
+                <button
+                  className="btn btn-primary"
+                  style={{ width: 'fit-content' }}
+                  onClick={handleUpdatePassword}
+                  disabled={savingPassword}
+                >
+                  {savingPassword ? 'Updating...' : 'Update Password'}
+                </button>
               </div>
             </div>
           )}
@@ -153,19 +265,16 @@ const Settings = () => {
             <div>
               <h3 style={{ marginBottom: '1.5rem' }}>Privacy Settings</h3>
               {[
-                { label: 'Public Profile', desc: 'Allow recruiters to find your profile' },
-                { label: 'Show Online Status', desc: 'Let others see when you are active' },
-                { label: 'Data Analytics', desc: 'Help improve the platform with usage data' },
+                { label: 'Public Profile', desc: 'Allow recruiters to find your profile', key: 'public_profile' },
+                { label: 'Show Online Status', desc: 'Let others see when you are active', key: 'show_online' },
+                { label: 'Data Analytics', desc: 'Help improve the platform with usage data', key: 'data_analytics' },
               ].map((item, idx) => (
                 <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 0', borderBottom: '1px solid var(--surface-border)' }}>
                   <div>
                     <p style={{ fontWeight: '500', margin: 0 }}>{item.label}</p>
                     <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>{item.desc}</p>
                   </div>
-                  <label style={{ position: 'relative', display: 'inline-block', width: '44px', height: '24px', cursor: 'pointer' }}>
-                    <input type="checkbox" defaultChecked style={{ opacity: 0, width: 0, height: 0 }} />
-                    <span style={{ position: 'absolute', inset: 0, background: 'var(--primary)', borderRadius: '24px', transition: '0.2s' }} />
-                  </label>
+                  <Toggle value={privacy[item.key]} onChange={() => handleToggle(item.key)} />
                 </div>
               ))}
             </div>

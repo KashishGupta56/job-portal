@@ -7,9 +7,7 @@ import {
   MapPin, 
   Users,
   Star,
-  BookOpen,
-  Zap,
-  LayoutDashboard
+  Zap
 } from 'lucide-react';
 
 const CompanyProcess = () => {
@@ -37,39 +35,63 @@ const CompanyProcess = () => {
       package: "₹20 - ₹50 LPA"
     },
     {
-        id: 3,
-        name: "Google",
-        location: "California & Worldwide",
-        rating: "4.9",
-        process: ["Phone Screen", "Multiple Coding Rounds", "Googliness & Leadership", "HR Round"],
-        pattern: "Strict on Algorithm complexity and clean code practices.",
-        syllabus: ["Advanced DSA", "Distributed Systems", "Scaling Techniques"],
-        eligibility: "Degree in CS or related field; high problem-solving skills.",
-        package: "₹30 - ₹60 LPA"
+      id: 3,
+      name: "Google",
+      location: "California & Worldwide",
+      rating: "4.9",
+      process: ["Phone Screen", "Multiple Coding Rounds", "Googliness & Leadership", "HR Round"],
+      pattern: "Strict on Algorithm complexity and clean code practices.",
+      syllabus: ["Advanced DSA", "Distributed Systems", "Scaling Techniques"],
+      eligibility: "Degree in CS or related field; high problem-solving skills.",
+      package: "₹30 - ₹60 LPA"
+    },
+    {
+      id: 4,
+      name: "Microsoft",
+      location: "Hyderabad & Worldwide",
+      rating: "4.7",
+      process: ["Online Assessment", "Technical Round 1", "Technical Round 2", "Technical Round 3", "HR Round"],
+      pattern: "Focus on problem solving, coding skills and behavioral questions based on Microsoft values.",
+      syllabus: ["DSA", "OOPS", "System Design", "Database Management", "OS Concepts"],
+      eligibility: "B.E/B.Tech/M.Tech with 60% or above. Strong coding and problem-solving skills required.",
+      package: "₹20 - ₹50 LPA"
+    },
+    {
+      id: 5,
+      name: "Infosys",
+      location: "Bangalore, India & Worldwide",
+      rating: "4.2",
+      process: ["Online Test", "Technical Interview", "HR Interview"],
+      pattern: "3 rounds total. Online test includes Aptitude, Logical Reasoning and Verbal Ability sections.",
+      syllabus: ["Aptitude", "Logical Reasoning", "Verbal Ability", "Basic Programming", "DBMS"],
+      eligibility: "60% or above throughout academics. No active backlogs. B.E/B.Tech/MCA/M.Tech.",
+      package: "₹3.6 - ₹9 LPA"
     }
   ];
 
   return (
-    <div className="company-process-page container" style={{ paddingBottom: '4rem' }}>
-      <div className="page-header" style={{ marginBottom: '4rem', textAlign: 'center' }}>
+    // ✅ FIX: zIndex 0 add kiya
+    <div className="company-process-page container" style={{ paddingBottom: '4rem', position: 'relative', zIndex: 0 }}>
+      
+      <div className="page-header" style={{ marginBottom: '4rem', textAlign: 'center', position: 'relative', zIndex: 0 }}>
         <h1 className="section-title">Hiring Process Insights</h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', maxWidth: '800px', margin: '1.5rem auto' }}>
           Get detailed information on the recruitment process, syllabus, and eligibility criteria of the world's most desired tech companies.
         </p>
         
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-            <div className="search-bar glass" style={{ width: '400px', padding: '0.8rem 1.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                <Search size={22} style={{ color: 'var(--text-muted)' }} />
-                <input 
-                    type="text" 
-                    placeholder="Search company..." 
-                    style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', width: '100%', outline: 'none' }} 
-                />
-            </div>
+          <div className="search-bar glass" style={{ width: '400px', padding: '0.8rem 1.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <Search size={22} style={{ color: 'var(--text-muted)' }} />
+            <input 
+              type="text" 
+              placeholder="Search company..." 
+              style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', width: '100%', outline: 'none' }} 
+            />
+          </div>
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem', position: 'relative', zIndex: 0 }}>
         {companies.map(company => (
           <div key={company.id} className="company-details-card glass" style={{ padding: '3rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--glass-border)', paddingBottom: '2rem', marginBottom: '2rem' }}>
@@ -124,7 +146,9 @@ const CompanyProcess = () => {
                 </h4>
                 <p style={{ color: 'var(--text-muted)' }}>{company.eligibility}</p>
                 <div style={{ marginTop: '2rem' }}>
-                    <button className="btn btn-primary" style={{ width: '100%' }}>View Full Profile <Zap size={18} style={{ marginLeft: '10px' }} /></button>
+                  <button className="btn btn-primary" style={{ width: '100%' }}>
+                    View Full Profile <Zap size={18} style={{ marginLeft: '10px' }} />
+                  </button>
                 </div>
               </div>
             </div>
